@@ -201,7 +201,7 @@ router.put(
 //@access Private
 router.delete("/experience/:exp_id", auth, async (req, res) => {
   //BUG DOESNT DELETE THE ID GIVEN
-  const { expId } = req.params.exp_id;
+  const expId = req.params.exp_id;
   try {
     const profile = await Profile.findOne({ user: req.user.id });
     const removeIndex = profile.experience
@@ -271,10 +271,15 @@ router.put(
 //@access Private
 router.delete("/education/:edu_id", auth, async (req, res) => {
   //BUG DOESNT DELETE THE ID GIVEN
-  const { eduId } = req.params.edu_id;
+  const eduId = req.params.edu_id;
   try {
     const profile = await Profile.findOne({ user: req.user.id });
-    const removeIndex = profile.education.map((item) => item.id).indexOf(eduId);
+    // const removeIndex = profile.education.map((item) => item.id).indexOf(eduId);
+    console.log(profile.education.map((item) => item.id));
+    console.log(eduId);
+    const removeIndex = profile.education
+      .map((item) => item.id)
+      .find((element) => element == eduId);
     console.log(removeIndex);
     profile.education.splice(removeIndex, 1);
     await profile.save();
