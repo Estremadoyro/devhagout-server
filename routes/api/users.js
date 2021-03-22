@@ -25,6 +25,7 @@ router.post(
   async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
+      console.log(errors);
       return res.status(400).json({ errors: errors.array() });
     }
     const { name, username, email, password } = req.body;
@@ -36,8 +37,10 @@ router.post(
       });
       if (user) {
         if (user.email == email) {
+          console.log(errors);
           res.status(400).json({ errors: [{ msg: "Email already exist :(" }] });
         } else {
+          console.log(errors);
           res
             .status(400)
             .json({ errors: [{ msg: "Username already exist :(" }] });

@@ -27,7 +27,7 @@ router.get("/", auth, async (req, res) => {
 router.post(
   "/",
   [
-    check("username", "Username is required").not().isEmpty(),
+    check("email", "Email is required").not().isEmpty(),
     check("password", "Password is required").exists(),
   ],
   async (req, res) => {
@@ -35,16 +35,24 @@ router.post(
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
-    const { username, password } = req.body;
+    const { email, password } = req.body;
+    console.log(`email ${email} password ${password}`);
 
     try {
-      const user = await User.findOne({ username });
-      const isMatch = await bcrypt.compare(password, user.password);
+      const user = await User.findOne({ email });
 
-      if (!user || !isMatch) {
+      if (!user) {
         res
           .status(400)
-          .json({ errors: [{ msg: "Invalid username or password" }] });
+          .json({ errors: [{ msg: "Invalid email or password" }] });
+        return;
+      }
+
+      const isMatch = await bcrypt.compare(password, user.password);
+      if (!isMatch) {
+        res
+          .status(400)
+          .json({ errors: [{ msg: "Invalid email or password" }] });
         return;
       }
       const payload = {
